@@ -99,7 +99,7 @@ policy_groups:
   - select:
       name: Proxy
       urls:
-        - https://sub.store/download/collection/AllServer?target=Egern
+        - 你的订阅地址
       update_interval: 86400
       icon: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/image/Proxy.png
 
