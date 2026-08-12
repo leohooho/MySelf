@@ -214,3 +214,20 @@ modules:
     url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/VideoAdBlock.yaml
     enabled: true
     update_interval: 86400
+
+  - name: 京东比价
+    url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/JDPrice.yaml
+    enabled: true
+    update_interval: 86400
+  
+  - name: App开屏广告跳过
+    url: https://yfamilys.com/module/adultraplus.sgmodule
+    enabled: true
+    update_interval: 86400
+  
+  - name: NodeSeek 签到
+    url: https://raw.githubusercontent.com/Nullwhy/Egern/main/Rewrite/NodeSeek.module
+    compat_arguments: { MINUTE: '31', HOUR: '08' }
+    env: { FIXED_LEGS: 'false', ENABLE_CAPTURE: 'false' }
+    enabled: true
+    update_interval: 86400
