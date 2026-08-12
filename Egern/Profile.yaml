@@ -214,3 +214,17 @@ modules:
     url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/VideoAdBlock.yaml
     enabled: true
     update_interval: 86400
+
+  - url: https://yfamilys.com/sgmodule/tv.sgmodule
+    enabled: true
+
+  - url: https://yfamilys.com/sgmodule/tianqi.sgmodule
+    env:
+      cityId: '101210106'
+    enabled: true
+
+  - url: https://yfamilys.com/sgmodule/rates.sgmodule
+    enabled: true
+
+  - url: https://yfamilys.com/module/adultraplus.sgmodule
+    enabled: true
