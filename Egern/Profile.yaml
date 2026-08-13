@@ -86,7 +86,7 @@ policy_groups:
     urls:
     - http://your-service-provider
     hidden: false
-    icon: https://github.com/Repcz/Repcz.github.io/raw/main/docs/egern/Photo/Egern.png
+    icon: https://raw.githubusercontent.com/Repcz/Repcz.github.io/master/docs/egern/Photo/Egern.png
 - select:
     name: Global
     policies:
