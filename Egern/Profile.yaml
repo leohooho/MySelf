@@ -285,8 +285,8 @@ modules:
   enabled: false
 - name: WeatherKit
     url: https://github.com/NSRingo/WeatherKit/releases/latest/download/iRingo.WeatherKit.sgmodule
-    enabled: true
-    update_interval: 259200
+  enabled: true
+  update_interval: 259200
 
 - name: 雪球去广告
   url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/Xueqiu.yaml
