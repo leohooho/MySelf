@@ -1,233 +1,327 @@
-# Egern 手机端精简配置
-# 分流：局域网/Apple/中国大陆直连，AIGC 独立手选，其余走 Proxy
-
-ipv6: false
-http_port: 3080
-socks_port: 3090
-allow_external_connections: false
+# Author:https://github.com/Repcz
+# TG:https://t.me/LUCYChannel_1024
+# 最后更新时间: 2026-7-26 16:10
+#
+# Egern Version ≥ v2.20.0(772)
+# 官方文档: https://doc.egernapp.com
+#
+# 以 ';' 或 '#' 或 '//' 开头的配置文件行为注释行
+#
+# ===== 本地定制 =====
+# 基于 Repcz/Egern.yaml 修改：
+#   · 去掉地区分组（香港/美国/新加坡/日本/台湾 的 auto_test）
+#   · 各服务组改为只引用 Manual（你的订阅节点），flatten 展开节点以便手选
+#   · AppleServers 分流从 HongKong 改到 Global
+#   · 请把 Manual 里的 urls 改成你自己的订阅地址
+# =====================
+http_port: 6152
+socks_port: 6153
 vif_only: true
-hide_vpn_icon: false
-block_quic: false
-close_connections_on_policy_change: true
-
-# 不让局域网和系统保留地址进入隧道
-vif_excluded_routes:
-  - 10.0.0.0/8
-  - 100.64.0.0/10
-  - 169.254.0.0/16
-  - 172.16.0.0/12
-  - 192.168.0.0/16
-  - 224.0.0.0/4
-  - "fc00::/7"
-  - "fe80::/10"
-  - "ff00::/8"
-
-real_ip_domains:
-  - "*.lan"
-  - "*.local"
-  - "*.home.arpa"
-  - "*.tailscale.net"
-  - "*.push.apple.com"
-
 hijack_dns:
-  - "*:53"
-
-geoip_db_url: https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country.mmdb
-proxy_latency_test_url: https://www.gstatic.com/generate_204
-direct_latency_test_url: https://www.apple.com/library/test/success.html
-
+- '*:53'
+geoip_db_url: https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-without-asn.mmdb
+asn_db_url: https://raw.githubusercontent.com/Loyalsoldier/geoip/release/GeoLite2-ASN.mmdb
+proxy_latency_test_url: http://1.1.1.1/generate_204
+direct_latency_test_url: http://wifi.vivo.com.cn/generate_204
 dns:
-  # 仅过滤明显无效/测试地址，不过滤局域网地址
-  block_ips:
-    - 0.0.0.0/8
-    - 127.0.0.0/8
-    - 192.0.2.0/24
-    - 198.18.0.0/15
-    - 198.51.100.0/24
-    - 203.0.113.0/24
-    - 224.0.0.0/4
-    - 240.0.0.0/4
-    - 255.255.255.255/32
-    - "::/128"
-    - "::1/128"
-    - "ff00::/8"
-
-  hosts:
-    iosapps.itunes.apple.com:
-      - iosapps.itunes.apple.com.download.ks-cdn.com
-
   bootstrap:
-    - system
-    - 223.5.5.5
-    - 119.29.29.29
-
+  - system
   upstreams:
-    ChinaDNS:
-      - https://dns.alidns.com/dns-query
-      - https://doh.pub/dns-query
-    GlobalDNS:
-      - https://dns.google/dns-query
-      - https://cloudflare-dns.com/dns-query
-
-  forward:
-    # 本地域名交给当前网络下发的 DNS
-    - domain_suffix: { match: local, value: system }
-    - domain_suffix: { match: lan, value: system }
-    - domain_suffix: { match: home.arpa, value: system }
-    - domain_suffix: { match: in-addr.arpa, value: system }
-    - domain_suffix: { match: ip6.arpa, value: system }
-
-    # 常见中国域名使用境内 DNS
-    - proxy_rule_set:
-        match: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/China/China_Domain.list
-        value: ChinaDNS
-        update_interval: 86400
-    - domain_suffix: { match: cn, value: ChinaDNS }
-
-    # 其他域名使用国际 DNS；其连接遵循下面的代理规则
-    - domain_wildcard:
-        match: "*"
-        value: GlobalDNS
-
-  # 节点服务器域名必须直连解析，避免 DNS → 代理 → DNS 循环
-  proxy_nameservers:
-    - 119.29.29.29
+    Domestic-DNS:
     - 223.5.5.5
-
+    - 119.29.29.29
+    Domestic-Encrypted-DNS:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+    Foreign-Encrypted-DNS:
+    - https://cloudflare-dns.com/dns-query
+    - https://dns.google/dns-query
+  forward:
+  - proxy_rule_set:
+      match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Reject.yaml
+      value: REJECT
+      disabled: false
+  - proxy_rule_set:
+      match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/ChinaDomain.yaml
+      value: Domestic-DNS
+      disabled: false
+  - domain_wildcard:
+      match: '*'
+      value: Domestic-Encrypted-DNS
+      disabled: false
+  hosts:
+    dns.google:
+    - 8.8.8.8, 8.8.4.4, 2001:4860:4860::8888, 2001:4860:4860::8844
+    cloudflare-dns.com:
+    - 104.16.249.249, 104.16.248.249, 2606:4700::6810:f8f9, 2606:4700::6810:f9f9
+    dns.alidns.com:
+    - 223.5.5.5, 223.6.6.6, 2400:3200:baba::1, 2400:3200::1
+    doh.pub:
+    - 1.12.12.12, 120.53.53.53
+    dot.pub:
+    - 1.12.12.12, 120.53.53.53
+  proxy_nameservers:
+  - 119.29.29.29
+  - 223.5.5.5
+real_ip_domains:
+- lancache.steamcontent.com
+- '*.msftconnecttest.com'
+- '*.msftncsi.com'
+- '*.srv.nintendo.net'
+- '*.stun.playstation.net'
+- xbox.*.microsoft.com
+- '*.xboxlive.com'
+- '*.logon.battlenet.com.cn'
+- '*.logon.battle.net'
+- stun.l.google.com
+- easy-login.10099.com.cn
+- '*-update.xoyocdn.com'
+- '*.prod.cloud.netflix.com'
+- appboot.netflix.com
+- '*-appboot.netflix.com'
 policy_groups:
-  # 所有节点手动选择，不进行后台自动测速
-  - select:
-      name: Proxy
-      urls:
-        - 你的订阅地址
-      update_interval: 86400
-      icon: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/image/Proxy.png
-
-  # 展开 Proxy 中的节点，允许 AI 服务独立手选节点
-  - select:
-      name: AIGC
-      policies:
-        - Proxy
-      flatten: true
-      icon: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/image/ChatGPT.png
-
-  - select:
-      name: 猎杀广告
-      policies:
-        - REJECT
-        - DIRECT
-      icon: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/image/AdBlock.png
-
-mitm:
-  ca_p12: egern.p12
-  ca_passphrase: egern
-  hostnames:
-    includes:
-      - raw.githubusercontent.com
-      - gist.githubusercontent.com
-
+- external:
+    name: Manual
+    type: select
+    urls:
+    - http://your-service-provider
+    hidden: false
+    icon: https://github.com/Repcz/Repcz.github.io/raw/main/docs/egern/Photo/Egern.png
+- select:
+    name: Global
+    policies:
+    - Manual
+    flatten: true
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png
+- select:
+    name: Streaming
+    policies:
+    - Manual
+    flatten: true
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
+- select:
+    name: Microsoft
+    policies:
+    - Manual
+    flatten: true
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png
+- select:
+    name: Google
+    policies:
+    - Manual
+    flatten: true
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
+- select:
+    name: AI
+    policies:
+    - Manual
+    flatten: true
+    icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/OpenAI.png
+- select:
+    name: Social
+    policies:
+    - Manual
+    flatten: true
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
+- select:
+    name: Telegram
+    policies:
+    - Manual
+    flatten: true
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
+- select:
+    name: Game
+    policies:
+    - Manual
+    flatten: true
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Game.png
+- select:
+    name: Emby
+    policies:
+    - Manual
+    flatten: true
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png
+- select:
+    name: Spotify
+    policies:
+    - Manual
+    flatten: true
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Spotify.png
+- select:
+    name: Final
+    policies:
+    - Manual
+    flatten: true
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Final.png
 rules:
-  # 局域网优先直连
-  - rule_set:
-      match: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Rule/Lan.yaml
-      policy: DIRECT
-      update_interval: 604800
-
-  # Apple 系统服务直连
-  - rule_set:
-      match: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Apple/Apple.list
-      policy: DIRECT
-      update_interval: 604800
-
-  # 广告规则先于业务与国内外分流
-  - rule_set:
-      match: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Rule/AdBlock.yaml
-      policy: 猎杀广告
-      update_interval: 86400
-
-  # AI 规则必须放在 Google/Microsoft/中国规则之前
-  - rule_set:
-      match: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/OpenAI/OpenAI.list
-      policy: AIGC
-      update_interval: 86400
-  - rule_set:
-      match: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Claude/Claude.list
-      policy: AIGC
-      update_interval: 86400
-  - rule_set:
-      match: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Gemini/Gemini.list
-      policy: AIGC
-      update_interval: 86400
-  - rule_set:
-      match: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Copilot/Copilot.list
-      policy: AIGC
-      update_interval: 86400
-
-  # 常用中国域名直连（约 3700 条，比 ChinaMax 更轻）
-  - rule_set:
-      match: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/China/China_Domain.list
-      policy: DIRECT
-      update_interval: 86400
-
-  # 中国大陆 IP 直连；不主动为此规则解析域名
-  - geoip:
-      match: CN
-      policy: DIRECT
-      no_resolve: true
-
-  # 未匹配流量默认代理，避免国外服务意外直连
-  - default:
-      policy: Proxy
-
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Direct.yaml
+    policy: DIRECT
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Reject.yaml
+    policy: REJECT
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/AI.yaml
+    policy: AI
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Telegram.yaml
+    policy: Telegram
+- and:
+    name: Fuck Telegram
+    match:
+    - not:
+        match:
+          rule_set:
+            match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Telegram.yaml
+    - listen_port:
+        match: '6153'
+    policy: REJECT
+    disabled: false
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Twitter.yaml
+    policy: Social
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Facebook.yaml
+    policy: Social
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/TikTok.yaml
+    policy: Social
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Game.yaml
+    policy: Game
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Google.yaml
+    policy: Google
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Github.yaml
+    policy: Microsoft
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Microsoft.yaml
+    policy: Microsoft
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Emby.yaml
+    policy: Emby
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Spotify.yaml
+    policy: Spotify
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Bahamut.yaml
+    policy: Streaming
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Netflix.yaml
+    policy: Streaming
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Disney.yaml
+    policy: Streaming
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/PrimeVideo.yaml
+    policy: Streaming
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/HBO.yaml
+    policy: Streaming
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Proxy.yaml
+    policy: Global
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/AppleServers.yaml
+    policy: Global
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Lan.yaml
+    policy: DIRECT
+- rule_set:
+    match: https://raw.githubusercontent.com/leohooho/MySelf/main/Egern/Rule/Hsbc.yaml
+    policy: DIRECT
+- rule_set:
+    match: https://raw.githubusercontent.com/leohooho/MySelf/main/Egern/Rule/IBKR.yaml
+    policy: DIRECT
+- geoip:
+    match: CN
+    policy: DIRECT
+- default:
+    policy: Final
+mitm:
+  enabled: true
 modules:
-  - name: WeatherKit
-    url: https://github.com/NSRingo/WeatherKit/releases/latest/download/iRingo.WeatherKit.sgmodule
-    enabled: true
-    update_interval: 259200
-
-  - name: 雪球去广告
-    url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/Xueqiu.yaml
-    enabled: true
-    update_interval: 86400
-
-  - name: 综合电商去广告
-    url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/EcommerceAdBlock.yaml
-    enabled: true
-    update_interval: 86400
-
-  - name: 地图三合一去广告
-    url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/MapAdBlock.yaml
-    enabled: true
-    update_interval: 86400
-
-  - name: 差旅出行去广告
-    url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/TravelAdBlock.yaml
-    enabled: true
-    update_interval: 86400
-
-  - name: 音乐流媒体去广告
-    url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/MusicAdBlock.yaml
-    enabled: true
-    update_interval: 604800
-
-  - name: 视频流媒体去广告
-    url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/VideoAdBlock.yaml
-    enabled: true
-    update_interval: 86400
-
-  - name: 京东比价
-    url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/JDPrice.yaml
-    enabled: true
-    update_interval: 86400
-  
-  - name: App开屏广告跳过
-    url: https://yfamilys.com/module/adultraplus.sgmodule
-    enabled: true
-    update_interval: 86400
-  
-  - name: NodeSeek 签到
-    url: https://raw.githubusercontent.com/Nullwhy/Egern/main/Rewrite/NodeSeek.module
-    compat_arguments: { MINUTE: '31', HOUR: '08' }
-    env: { FIXED_LEGS: 'false', ENABLE_CAPTURE: 'false' }
-    enabled: true
-    update_interval: 86400
+- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/广告平台拦截器.beta.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/拦截HTTPDNS.beta.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/高德地图去广告.beta.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/闲鱼去广告.beta.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/酷安去广告.beta.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/知乎去广告.beta.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/滴滴出行去广告.beta.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/微博轻享版去广告.beta.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/微信小程序去广告.beta.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/微信公众号去广告.beta.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/小红书去广告.beta.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/什么值得买去广告.beta.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/IT之家去广告.beta.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/fmz200/wool_scripts/refs/heads/main/Surge/module/XWebAds.module
+  enabled: true
+- url: https://raw.githubusercontent.com/Keywos/rule/main/script/wy/wy.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/Maasea/sgmodule/master/YouTube.Enhance.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/ConnersHua/RuleGo/master/Surge/Module/Block/Advertising.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/githubdulong/Script/master/Surge/jd_price2.sgmodule
+  enabled: true
+- url: https://github.com/chavyleung/scripts/raw/master/box/rewrite/boxjs.rewrite.surge.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/kokoryh/Sparkle/refs/heads/master/release/surge/module/bilibili.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/xream/scripts/main/surge/modules/network-info/network-info-lite.sgmodule
+  enabled: false
+- url: https://raw.githubusercontent.com/001ProMax/Surge/main/Module/AD/Spotify.sgmodule
+  enabled: false
+# ===== 本地追加模块（如需去除请直接删对应条目）=====
+- name: WeatherKit
+  url: https://github.com/NSRingo/WeatherKit/releases/latest/download/iRingo.WeatherKit.sgmodule
+  enabled: true
+  update_interval: 259200
+- name: 雪球去广告
+  url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/Xueqiu.yaml
+  enabled: true
+  update_interval: 86400
+- name: 综合电商去广告
+  url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/EcommerceAdBlock.yaml
+  enabled: true
+  update_interval: 86400
+- name: 差旅出行去广告
+  url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/TravelAdBlock.yaml
+  enabled: true
+  update_interval: 86400
+- name: 音乐流媒体去广告
+  url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/MusicAdBlock.yaml
+  enabled: true
+  update_interval: 604800
+- name: 视频流媒体去广告
+  url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/VideoAdBlock.yaml
+  enabled: true
+  update_interval: 86400
+- name: 京东比价
+  url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/JDPrice.yaml
+  enabled: false
+  update_interval: 86400
+- name: App开屏广告跳过
+  url: https://yfamilys.com/module/adultraplus.sgmodule
+  enabled: true
+  update_interval: 86400
+- name: NodeSeek 签到
+  url: https://raw.githubusercontent.com/Nullwhy/Egern/main/Rewrite/NodeSeek.module
+  compat_arguments: { MINUTE: '31', HOUR: '08' }
+  env: { FIXED_LEGS: 'false', ENABLE_CAPTURE: 'false' }
+  enabled: true
+  update_interval: 86400
