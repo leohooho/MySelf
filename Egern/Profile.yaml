@@ -334,3 +334,11 @@ modules:
   env: { FIXED_LEGS: 'false', ENABLE_CAPTURE: 'false' }
   enabled: true
   update_interval: 86400
+- name: 小组件
+  url: https://raw.githubusercontent.com/egerndaddy/quick-start/refs/heads/main/modules/widgets.yaml
+  enabled: true
+  update_interval: 86400
+- name: Egern 桌面小组件合集
+  url: https://raw.githubusercontent.com/jnlaoshu/MySelf/refs/heads/main/Egern/Widget/Widgets.yaml
+  enabled: true
+  update_interval: 43200
