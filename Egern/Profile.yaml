@@ -158,6 +158,12 @@ rules:
     match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Direct.yaml
     policy: DIRECT
 - rule_set:
+    match: https://raw.githubusercontent.com/leohooho/MySelf/main/Egern/Rule/Hsbc.yaml
+    policy: DIRECT
+- rule_set:
+    match: https://raw.githubusercontent.com/leohooho/MySelf/main/Egern/Rule/IBKR.yaml
+    policy: DIRECT
+- rule_set:
     match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Reject.yaml
     policy: REJECT
 - rule_set:
