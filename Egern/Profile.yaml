@@ -228,12 +228,6 @@ rules:
 - rule_set:
     match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Lan.yaml
     policy: DIRECT
-- rule_set:
-    match: https://raw.githubusercontent.com/leohooho/MySelf/main/Egern/Rule/Hsbc.yaml
-    policy: DIRECT
-- rule_set:
-    match: https://raw.githubusercontent.com/leohooho/MySelf/main/Egern/Rule/IBKR.yaml
-    policy: DIRECT
 - geoip:
     match: CN
     policy: DIRECT
@@ -286,39 +280,54 @@ modules:
   enabled: false
 - url: https://raw.githubusercontent.com/001ProMax/Surge/main/Module/AD/Spotify.sgmodule
   enabled: false
-# ===== 本地追加模块（如需去除请直接删对应条目）=====
+- name: SubStore
+  url: https://raw.githubusercontent.com/sub-store-org/Sub-Store/refs/heads/master/config/Egern.yaml
+  enabled: false
 - name: WeatherKit
-  url: https://github.com/NSRingo/WeatherKit/releases/latest/download/iRingo.WeatherKit.sgmodule
-  enabled: true
-  update_interval: 259200
+    url: https://github.com/NSRingo/WeatherKit/releases/latest/download/iRingo.WeatherKit.sgmodule
+    enabled: true
+    update_interval: 259200
+
 - name: 雪球去广告
   url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/Xueqiu.yaml
   enabled: true
   update_interval: 86400
+
 - name: 综合电商去广告
   url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/EcommerceAdBlock.yaml
   enabled: true
   update_interval: 86400
+
+- name: 地图三合一去广告
+  url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/MapAdBlock.yaml
+  enabled: true
+  update_interval: 86400
+
 - name: 差旅出行去广告
   url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/TravelAdBlock.yaml
   enabled: true
   update_interval: 86400
+
 - name: 音乐流媒体去广告
   url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/MusicAdBlock.yaml
   enabled: true
   update_interval: 604800
+
 - name: 视频流媒体去广告
   url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/VideoAdBlock.yaml
   enabled: true
   update_interval: 86400
+
 - name: 京东比价
   url: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Module/JDPrice.yaml
   enabled: false
   update_interval: 86400
+
 - name: App开屏广告跳过
   url: https://yfamilys.com/module/adultraplus.sgmodule
   enabled: true
   update_interval: 86400
+
 - name: NodeSeek 签到
   url: https://raw.githubusercontent.com/Nullwhy/Egern/main/Rewrite/NodeSeek.module
   compat_arguments: { MINUTE: '31', HOUR: '08' }
