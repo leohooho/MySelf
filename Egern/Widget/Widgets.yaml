@@ -323,7 +323,7 @@ scriptings:
   # 财联社电报为本仓库按 Egern Widget DSL 维护的实现。
   - generic:
       name: 财联社电报
-      script_url: https://raw.githubusercontent.com/leohooho/MySelf/master/Egern/Widget/CLSNews.js
+      script_url: https://raw.githubusercontent.com/leohooho/MySelf/refs/heads/main/Egern/Widget/CLSNews.js
       timeout: 10
   # 来自 IBL3ND/module。
   - generic:
