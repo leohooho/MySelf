@@ -31,6 +31,8 @@ function normalize(payload) {
     payload && payload.data && payload.data.roll_data,
     payload && payload.data && payload.data.telegraph_list,
     payload && payload.data && payload.data.list,
+    payload && payload.data && payload.data.data && payload.data.data.roll_data,
+    payload && payload.data && payload.data.data && payload.data.data.list,
     payload && payload.data,
     payload && payload.list,
   ];
@@ -109,7 +111,7 @@ function emptyWidget(message, refreshMinutes) {
       header(true),
       { type: "spacer" },
       { type: "image", src: "sf-symbol:exclamationmark.triangle", width: 24, height: 24, color: COLORS.accent },
-      { type: "text", text: message, font: { size: "caption1", weight: "medium" }, textColor: COLORS.secondary, maxLines: 2 },
+      { type: "text", text: message, font: { size: "caption1", weight: "medium" }, textColor: COLORS.secondary, maxLines: 3, minScale: 0.75 },
       { type: "spacer" },
     ],
   };
@@ -182,24 +184,40 @@ export default async function(ctx) {
   const refreshMinutes = Math.max(5, Number(ctx.env.REFRESH_MINUTES) || 10);
   let items = [];
   let stale = false;
+  let failure = "未知错误";
 
   try {
-    const query = "?app=CailianpressWeb&category=&lastTime=&last_time=&os=web&refresh_type=1&rn=20&sv=8.4.6";
+    const query = "?app=CailianpressWeb&category=&lastTime=&last_time=&os=web&refresh_type=1&rn=20&sv=7.7.5";
     const response = await ctx.http.get(API_URL + query, {
       timeout: 8000,
-      headers: { Accept: "application/json" },
+      credentials: "omit",
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Referer: "https://www.cls.cn/telegraph",
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148",
+      },
     });
     if (response.status < 200 || response.status >= 300) throw new Error(`HTTP ${response.status}`);
-    items = normalize(await response.json());
-    if (!items.length) throw new Error("empty response");
+    const payload = await response.json();
+    items = normalize(payload);
+    if (!items.length) {
+      const code = payload && (payload.code || payload.errno || payload.status);
+      const message = payload && (payload.msg || payload.message || payload.error);
+      throw new Error(message || (code != null ? `接口代码 ${code}` : "响应中没有新闻"));
+    }
     ctx.storage.setJSON(CACHE_KEY, { items, savedAt: Date.now() });
-  } catch (_) {
-    const cache = ctx.storage.getJSON(CACHE_KEY);
-    items = cache && Array.isArray(cache.items) ? cache.items : [];
+  } catch (error) {
+    failure = error && error.message ? String(error.message) : String(error);
+    try {
+      const cache = ctx.storage.getJSON(CACHE_KEY);
+      items = cache && Array.isArray(cache.items) ? cache.items : [];
+    } catch (_) {
+      items = [];
+    }
     stale = true;
   }
 
-  if (!items.length) return emptyWidget("暂时无法获取财联社电报", refreshMinutes);
+  if (!items.length) return emptyWidget(`获取失败：${failure}`, refreshMinutes);
   if (ctx.widgetFamily === "accessoryInline") return inlineWidget(items[0], refreshMinutes);
   if (ctx.widgetFamily === "accessoryCircular" || ctx.widgetFamily === "accessoryRectangular") {
     return accessoryWidget(items[0], refreshMinutes);
