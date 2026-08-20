@@ -52,6 +52,12 @@ env_schema:
     options: ["", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"]
     default_value: ""
 
+  # ── [财联社电报] 配置区 ──────────────────────────────────────────────────
+  REFRESH_MINUTES:
+    name: 📰 [财联社] 刷新间隔（分钟）
+    description: "系统建议的最早刷新时间；iOS 可能根据系统策略延后刷新，最小值为 5"
+    default_value: "10"
+
   # ── [岁时黄历] 配置区 ───────────────────────────────────────────────────
   ASTRO_OR_WEEK:
     name: 🔮 [黄历] 右上角显示模式
@@ -314,11 +320,12 @@ scriptings:
       name: 现货黄金 K 线
       script_url: https://raw.githubusercontent.com/Revicess/Egern/refs/heads/master/widget/Gold_XAU.js
       timeout: 15
-  # 以下两项来自 IBL3ND/module。
+  # 财联社电报为本仓库按 Egern Widget DSL 维护的实现。
   - generic:
       name: 财联社电报
-      script_url: https://raw.githubusercontent.com/IBL3ND/module/main/CLS_Widget.JS
+      script_url: https://raw.githubusercontent.com/jnlaoshu/MySelf/master/Egern/Widget/CLSNews.js
       timeout: 10
+  # 来自 IBL3ND/module。
   - generic:
       name: 招商金价
       script_url: https://raw.githubusercontent.com/IBL3ND/module/main/Gold_Widgets.JS
