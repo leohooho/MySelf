@@ -1,4 +1,4 @@
-const API_URL = "https://www.cls.cn/nodeapi/telegraphList";
+const API_URL = "https://www.cls.cn/v1/roll/get_roll_list";
 const HOME_URL = "https://www.cls.cn/telegraph";
 const CACHE_KEY = "cls-news-cache-v1";
 
@@ -26,6 +26,18 @@ function timestamp(value) {
   return number < 1000000000000 ? number * 1000 : number;
 }
 
+function articleURL(value, id) {
+  if (typeof value === "string") {
+    const candidate = value.trim();
+    if (candidate.startsWith("https://www.cls.cn/")) return candidate;
+    if (candidate.startsWith("http://www.cls.cn/")) {
+      return "https://www.cls.cn/" + candidate.slice("http://www.cls.cn/".length);
+    }
+    if (candidate.startsWith("/")) return "https://www.cls.cn" + candidate;
+  }
+  return id ? `https://www.cls.cn/detail/${encodeURIComponent(String(id))}` : HOME_URL;
+}
+
 function normalize(payload) {
   const candidates = [
     payload && payload.data && payload.data.roll_data,
@@ -46,7 +58,7 @@ function normalize(payload) {
       title,
       time: timestamp(item.ctime || item.create_time || item.time || item.publish_time),
       important: Boolean(item.is_red || item.is_top || item.level === 1),
-      url: item.share_url || item.shareurl || item.url || (id ? `https://www.cls.cn/detail/${id}` : HOME_URL),
+      url: articleURL(item.share_url || item.shareurl || item.url, id),
     };
   }).filter((item) => item.title);
 }
@@ -187,7 +199,8 @@ export default async function(ctx) {
   let failure = "未知错误";
 
   try {
-    const query = "?app=CailianpressWeb&category=&lastTime=&last_time=&os=web&refresh_type=1&rn=20&sv=7.7.5";
+    // sign = md5(sha1(query without sign)); parameters are fixed so no crypto API is required.
+    const query = "?appName=CailianpressWeb&last_time=&os=web&refresh_type=1&rn=20&sv=7.7.5&sign=d89fdd16805945016e0b9cb12e994a46";
     const response = await ctx.http.get(API_URL + query, {
       timeout: 8000,
       credentials: "omit",
@@ -210,7 +223,9 @@ export default async function(ctx) {
     failure = error && error.message ? String(error.message) : String(error);
     try {
       const cache = ctx.storage.getJSON(CACHE_KEY);
-      items = cache && Array.isArray(cache.items) ? cache.items : [];
+      items = cache && Array.isArray(cache.items)
+        ? cache.items.map((item) => ({ ...item, url: articleURL(item.url, item.id) }))
+        : [];
     } catch (_) {
       items = [];
     }
