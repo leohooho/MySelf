@@ -2,17 +2,24 @@
 # 📌 模块名称: Egern 桌面小组件合集
 # ✨ 主要功能: 合并个人小组件与 egerndaddy/quick-start 小组件，统一配置和维护。
 # 🔗 模块地址: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Widget/Widgets.yaml
-# 🔗 上游来源: https://github.com/egerndaddy/quick-start、https://github.com/IBL3ND/module
+# 🔗 上游来源: https://github.com/egerndaddy/quick-start、https://github.com/IBL3ND/module、https://github.com/Revicess/Egern
 # ⏱️ 更新时间: 2026-08-20
 # ==========================================
 
 name: "Egern 桌面小组件合集"
-description: "黄历、倒数、行情、财联社、金价、一言、天气、进度、网络、油价及服务器监控"
+description: "黄历、倒数、行情、财联社、金价 K 线、一言、天气、进度、网络、油价及服务器监控"
 
 auto_update:
   interval: 43200
 
 env_schema:
+
+  # ── [现货黄金 K 线] 配置区 ───────────────────────────────────────────────
+  KLT:
+    name: 📈 [黄金 K 线] 周期
+    description: "15/30/60 分钟，或日 K、周 K、月 K"
+    options: ["15", "30", "60", "101", "102", "103"]
+    default_value: "15"
 
   # ── [通用倒计时] 配置区 ──────────────────────────────────────────────────
   TITLE:
@@ -302,6 +309,11 @@ env_schema:
     default_value: ""
 
 scriptings:
+  # 来自 Revicess/Egern。
+  - generic:
+      name: 现货黄金 K 线
+      script_url: https://raw.githubusercontent.com/Revicess/Egern/refs/heads/master/widget/Gold_XAU.js
+      timeout: 15
   # 以下两项来自 IBL3ND/module。
   - generic:
       name: 财联社电报
@@ -347,6 +359,8 @@ scriptings:
       timeout: 10
 
 widgets:
+  - name: 现货黄金 K 线
+    script_name: 现货黄金 K 线
   - name: 财联社电报
     script_name: 财联社电报
   - name: 招商金价
