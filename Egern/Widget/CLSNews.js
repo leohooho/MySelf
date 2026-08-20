@@ -1,4 +1,4 @@
-const API_URL = "https://www.cls.cn/v1/roll/get_roll_list";
+const API_URL = "https://api.98dou.cn/api/hotlist/cls/all";
 const HOME_URL = "https://www.cls.cn/telegraph";
 const CACHE_KEY = "cls-news-cache-v1";
 
@@ -22,8 +22,12 @@ function text(value) {
 
 function timestamp(value) {
   const number = Number(value);
-  if (!Number.isFinite(number)) return null;
-  return number < 1000000000000 ? number * 1000 : number;
+  if (Number.isFinite(number)) return number < 1000000000000 ? number * 1000 : number;
+  if (typeof value === "string") {
+    const parsed = new Date(value.replace(" ", "T") + "+08:00").getTime();
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
 }
 
 function articleURL(value, id) {
@@ -51,7 +55,7 @@ function normalize(payload) {
   const list = candidates.find(Array.isArray) || [];
 
   return list.map((item) => {
-    const id = item.id || item.telegraph_id || item.article_id;
+    const id = item.id_original || item.telegraph_id || item.article_id || item.id;
     const title = text(item.title || item.subject || item.content || item.brief);
     return {
       id: id ? String(id) : "",
@@ -199,16 +203,8 @@ export default async function(ctx) {
   let failure = "未知错误";
 
   try {
-    // sign = md5(sha1(query without sign)); parameters are fixed so no crypto API is required.
-    const query = "?appName=CailianpressWeb&last_time=&os=web&refresh_type=1&rn=20&sv=7.7.5&sign=d89fdd16805945016e0b9cb12e994a46";
-    const response = await ctx.http.get(API_URL + query, {
+    const response = await ctx.http.get(API_URL, {
       timeout: 8000,
-      credentials: "omit",
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        Referer: "https://www.cls.cn/telegraph",
-        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148",
-      },
     });
     if (response.status < 200 || response.status >= 300) throw new Error(`HTTP ${response.status}`);
     const payload = await response.json();
