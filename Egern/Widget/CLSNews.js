@@ -205,6 +205,7 @@ export default async function(ctx) {
   try {
     const response = await ctx.http.get(API_URL, {
       timeout: 8000,
+      policy: "DIRECT",
     });
     if (response.status < 200 || response.status >= 300) throw new Error(`HTTP ${response.status}`);
     const payload = await response.json();
