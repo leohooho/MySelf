@@ -1,18 +1,49 @@
-
 # ==========================================
 # 📌 模块名称: Egern 桌面小组件合集
-# ✨ 主要功能: 提供全套小组件的全局可视化配置入口。完美适配最新版底层 JS 的各项高阶能力，包含黄历定制、时光倒数（防调休）、专属纪念日、全国油价定位及高可用多节点 SSH 服务器监控。
-# 🔗 引用链接: https://raw.githubusercontent.com/jnlaoshu/MySelf/master/Egern/Widget/Widgets.yaml
-# ⏱️ 更新时间: 2026.07.20 17:00
+# ✨ 主要功能: 合并个人小组件与 egerndaddy/quick-start 小组件，统一配置和维护。
+# 🔗 模块地址: https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Egern/Widget/Widgets.yaml
+# 🔗 上游来源: https://github.com/egerndaddy/quick-start、https://github.com/IBL3ND/module
+# ⏱️ 更新时间: 2026-08-20
 # ==========================================
 
 name: "Egern 桌面小组件合集"
-description: "包含：岁时黄历、时光倒数、网络雷达、全国油价、服务器监控"
+description: "黄历、倒数、行情、财联社、金价、一言、天气、进度、网络、油价及服务器监控"
 
 auto_update:
   interval: 43200
 
 env_schema:
+
+  # ── [通用倒计时] 配置区 ──────────────────────────────────────────────────
+  TITLE:
+    name: ⏳ [倒计时] 标题
+    description: "通用倒计时小组件显示的标题"
+    default_value: "目标日"
+
+  DATE:
+    name: 📅 [倒计时] 目标日期
+    description: "ISO 8601 格式，例如 2026-12-31T00:00:00+08:00"
+    default_value: "2026-12-31T00:00:00+08:00"
+
+  ICON:
+    name: 🏁 [倒计时] 图标
+    description: "SF Symbol 图标名称"
+    default_value: "flag.checkered"
+
+  COLOR_1:
+    name: 🎨 [倒计时] 渐变起始色
+    default_value: "#6366F1"
+
+  COLOR_2:
+    name: 🎨 [倒计时] 渐变结束色
+    default_value: "#8B5CF6"
+
+  # ── [一言] 配置区 ────────────────────────────────────────────────────────
+  TYPE:
+    name: 💬 [一言] 类型
+    description: "a 动画、b 漫画、c 游戏、d 文学、e 原创、f 网络、g 其他、h 影视、i 诗词、j 网易云、k 哲学；留空则不限"
+    options: ["", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"]
+    default_value: ""
 
   # ── [岁时黄历] 配置区 ───────────────────────────────────────────────────
   ASTRO_OR_WEEK:
@@ -140,12 +171,12 @@ env_schema:
   PROVINCE:
     name: 📍 [油价] 省份名称/编码
     description: "输入中文省份名（如 四川）或省份编码（如 51），不支持拼音"
-    default_value: "四川"
+    default_value: "浙江"
 
   CITY:
-    name: 🏙️ [油价] 城市/地区名称
-    description: "输入中文城市或地区名称（如 成都），不支持拼音"
-    default_value: "成都"
+    name: 🏙️ [天气/油价] 城市名称
+    description: "天气和油价小组件共用；建议输入中文城市名（如 成都）"
+    default_value: "杭州"
 
   AREA_INDEX:
     name: 🔢 [油价] 区域索引（可选）
@@ -271,6 +302,31 @@ env_schema:
     default_value: ""
 
 scriptings:
+  # 以下两项来自 IBL3ND/module。
+  - generic:
+      name: 财联社电报
+      script_url: https://raw.githubusercontent.com/IBL3ND/module/main/CLS_Widget.JS
+      timeout: 10
+  - generic:
+      name: 招商金价
+      script_url: https://raw.githubusercontent.com/IBL3ND/module/main/Gold_Widgets.JS
+      timeout: 10
+  # 以下五项来自 egerndaddy/quick-start，模块清单在本仓库统一维护。
+  - generic:
+      name: 加密货币行情
+      script_url: https://raw.githubusercontent.com/egerndaddy/quick-start/main/modules/widget_crypto_price.js
+  - generic:
+      name: 通用倒计时
+      script_url: https://raw.githubusercontent.com/egerndaddy/quick-start/main/modules/countdown.js
+  - generic:
+      name: 一言
+      script_url: https://raw.githubusercontent.com/egerndaddy/quick-start/main/modules/hitokoto.js
+  - generic:
+      name: 天气
+      script_url: https://raw.githubusercontent.com/egerndaddy/quick-start/main/modules/weather.js
+  - generic:
+      name: 今日进度
+      script_url: https://raw.githubusercontent.com/egerndaddy/quick-start/main/modules/daily-progress.js
   - generic:
       name: 岁时黄历
       script_url: https://raw.githubusercontent.com/jnlaoshu/MySelf/master/Egern/Widget/Almanac.js
@@ -291,6 +347,20 @@ scriptings:
       timeout: 10
 
 widgets:
+  - name: 财联社电报
+    script_name: 财联社电报
+  - name: 招商金价
+    script_name: 招商金价
+  - name: 加密货币行情
+    script_name: 加密货币行情
+  - name: 通用倒计时
+    script_name: 通用倒计时
+  - name: 一言
+    script_name: 一言
+  - name: 天气
+    script_name: 天气
+  - name: 今日进度
+    script_name: 今日进度
   - name: 岁时黄历
     script_name: 岁时黄历
   - name: 时光倒数

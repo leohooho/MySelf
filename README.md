@@ -25,7 +25,7 @@ Egern/
 - **DNS**：使用腾讯与阿里 DoH，Bootstrap 使用 `223.5.5.5` 和 `119.29.29.29`
 - **默认策略**：未命中其他规则的流量交给 `Proxy`
 
-配置启用了 DNS 劫持和 MITM，并按需加载流媒体增强、WeatherKit、广告处理及桌面小组件等模块。
+配置启用了 DNS 劫持和 MITM，并按需加载流媒体增强、WeatherKit、广告处理及桌面小组件等模块。桌面小组件已统一合并到 `Egern/Widget/Widgets.yaml`，无需再单独订阅 quick-start 的模块清单。
 
 ### 使用方式
 
